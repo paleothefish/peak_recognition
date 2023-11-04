@@ -1,59 +1,33 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-# Borrowed from pymzml examples
-
-import os
-import sys
-
+import csv
+import json
+import matplotlib.pyplot as plt
 import pymzml
-from pymzml.plot import Factory
 
+# Read the CSV file
+with open(r'D:\UCD_Fiehn_Lab\EIC_data.csv', 'r') as f:
+    reader = csv.DictReader(f)
+    content_column = [row['content'] for row in reader]
 
-def main(mzml_file):
-    """
-    Plots a chromatogram for the given mzML file. File is saved as
-    'chromatogram_<mzml_file>.html'.
+# Convert the 'content' column to a list of dictionaries
+content_dicts = [json.loads(content) for content in content_column]
 
-    usage:
+# Iterate over the dictionaries
+for content_dict in content_dicts:
+    # Grab the 'intensities' values
+    intensities = content_dict.get('intensities', [])
 
-        ./plot_chromatogram.py <path_to_mzml_file>
+    # Generate the EICs using matplotlib
+    plt.plot(intensities, linewidth=2.0, color='red')
 
-    """
-    run = pymzml.run.Reader(mzml_file)
-    mzml_basename = os.path.basename(mzml_file)
-    pf = Factory()
-    pf.new_plot()
-    pf.add(run["TIC"].peaks(), color=(0, 0, 0), style="lines", title=mzml_basename)
-    pf.save(
-        "chromatogram_{0}.html".format(mzml_basename),
-        layout={
-            "xaxis":{
-                "title": "Retention time",
-                "ticks": 'outside',
-                "ticklen": 2,
-                "tickwidth": 0.25,
-                "showgrid": False,
-                "linecolor": 'black',
-            },
-            "yaxis": {
-                "title": "TIC",
-                "ticks": 'outside',
-                "ticklen": 2,
-                "tickwidth": 0.25,
-                "showgrid": False,
-                "linecolor": 'black',
-            },
-            "plot_bgcolor": 'rgba(255, 255, 255, 0)',
-            "paper_bgcolor": 'rgba(255, 255, 255, 0)',
-        },
-    )
-    return
+    # Add labels to the axes
+    plt.xlabel('Time')
+    plt.ylabel('Abundance')
 
+    # Add grid lines
+    plt.grid(True)
 
-if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print(main.__doc__)
-        exit()
-    mzml_file = sys.argv[1]
-    #mzml_file = "../qc/qc/neg/PoolQC161_MX612252_NegLIPIDS_postLongevity_Female2163.mzML"
-    main(mzml_file)
+    # Adjust the scale of the y-axis
+    if min(intensities) != max(intensities):
+        plt.ylim(min(intensities), max(intensities))
+
+    plt.show()
