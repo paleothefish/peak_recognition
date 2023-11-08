@@ -16,6 +16,9 @@ for content_dict in content_dicts:
     # Grab the 'intensities' values
     intensities = content_dict.get('intensities', [])
 
+    # **Remove zeros from the intensities list**
+    intensities = [i for i in intensities if i != 0]
+
     # Generate the EICs using matplotlib
     plt.plot(intensities, linewidth=2.0, color='red')
 
