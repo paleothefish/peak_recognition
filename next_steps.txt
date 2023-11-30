@@ -1,5 +1,5 @@
 1. Convert peak_chromatogram.py into class + eliminate all axes (don't shrink to 128 x 128 until the very last step before we bully/train our model) 
 2. Use psycopg2 to connect to LCB database and query the database directly with SQL
-  a. While storing the plots with their unique id on the HD
+  a. While storing the plots with their unique id on the HDD
 3. Shrink to a 128 x 128 resolution 
 4. Plug and bully PyTorch
