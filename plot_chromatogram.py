@@ -1,45 +1,58 @@
 import json
 import matplotlib.pyplot as plt
 import numpy as np
+import os
 
-# Read the CSV file
-with open(r'D:\UCD_Fiehn_Lab\Untitled (1)', 'r') as f:
-    # Create a json reader
-    single_eic = json.load(open(r'D:\UCD_Fiehn_Lab\Untitled (1)', 'r'))
+class EICPlotter:
+    def __init__(self, dir_path):
+        #Store the path directory
+        self.dir_path = dir_path
+        #Initialize the plot counter
+        self.i = 0
 
-# Convert the 'content' column to a list of dictionaries
-content_dicts = [single_eic]
-i = 0
+    def plot(self):
+        #Iterate through the files in the directory
+        for file_name in os.listdir(self.dir_path):
+            #When file is a json file
+            if file_name.endswith('.json'):
+                #Open the file and load the content
+                file_path = os.path.join(self.dir_path, file_name)
+                with open(file_path, 'r') as f:
+                    content_dict = json.load(f)
 
-# Iterate over the dictionaries
-for content_dict in content_dicts:
-    # Grab the 'intensities' values
-    intensities = content_dict.get('intensities', [])
-    # Set the x min to be begin_ri and set the x max to be end_ri
-    min_ri = content_dict.get('begin_ri', 0)
-    max_ri = content_dict.get('end_ri', 0)
+                #Get the retention index and intensities from the json file
+                intensities = content_dict.get('intensities', [])
+                min_ri = content_dict.get('begin_ri', 0)
+                max_ri = content_dict.get('end_ri', 0)
+                #Create an array of retention indexes
+                retention_index = np.linspace(min_ri, max_ri, len(intensities))
 
-    # Create a list with the lower bound min_ri and upper bound of max_ri with len(intensities)
-    retention_index = np.linspace(min_ri, max_ri, len(intensities))
+                #Plot the retention index vs. intensities
+                plt.plot(retention_index, intensities, linewidth=2.0, color='black')
+                # plt.xlabel('Retention Index')
+                # plt.ylabel('Abundance')
+                # plt.grid(True)
+                plt.axis('off')
 
-    # Generate the EICs using tplotlib
-    plt.plot(retention_index, intensities, linewidth=2.0, color='red')
+                #Set the y-axis limit to the min and max intensities
+                if min(intensities) != max(intensities):
+                    plt.ylim(min(intensities), max(intensities))
 
-    # Add labels to the axes
-    plt.xlabel('Time [s]')
-    plt.ylabel('Abundance')
+                #Set the x-axis limit to the min and max retention indexes
+                plt.xlim(min_ri, max_ri)
 
-    # Add grid lines
-    plt.grid(True)
+                #Keep track of the number of plots
+                self.i += 1
+                #Set the title of the plot
+                # title = "plot #" + str(self.i)
+                # plt.title(title)
 
-    # Adjust the scale of the y-axis
-    if min(intensities) != max(intensities):
-        plt.ylim(min(intensities), max(intensities))
+                #Show the plot
+                plt.show()
 
-    plt.xlim(min_ri, max_ri)
-
-    i = i + 1
-    title = "plot #" + str(i)
-    plt.title(title)
-
-    plt.show()
+# Usage of the EICPlotter class
+dir_path = r'D:\UCD_Fiehn_Lab\peaks_from_LCB'
+#Create an instance of the EICPlotter class
+plotter = EICPlotter(dir_path)
+#Call the plot method
+plotter.plot()
