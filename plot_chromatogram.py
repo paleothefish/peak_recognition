@@ -31,7 +31,8 @@ class EICPlotter:
                 retention_index = np.linspace(min_ri, max_ri, len(intensities))
 
                 #Create a plot
-                fig, ax = plt.subplots(figsize=(self.width, self.height))
+                fig, ax = plt.subplots(figsize=(1.28, 1.28))
+                #fig, ax = plt.subplots(figsize=(self.width, self.height))
                 #Plot the retention index and intensities
                 ax.plot(retention_index, intensities, linewidth=2.0, color='black')
                 ax.axis('off')
@@ -65,6 +66,6 @@ class EICPlotter:
 # Usage of the EICPlotter class
 dir_path = r'D:\UCD_Fiehn_Lab\peaks_from_LCB'
 #Create an instance of the EICPlotter class
-plotter = EICPlotter(dir_path, 2, 2)
+plotter = EICPlotter(dir_path, 1, 1)
 #Call the plot method
 plotter.plot()
