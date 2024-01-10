@@ -4,9 +4,12 @@ import numpy as np
 import os
 
 class EICPlotter:
-    def __init__(self, dir_path):
+    def __init__(self, dir_path, width, height):
         #Store the path directory
         self.dir_path = dir_path
+        #Set the width and height of the plot
+        self.width = width
+        self.height = height
         #Initialize the plot counter
         self.i = 0
 
@@ -27,12 +30,11 @@ class EICPlotter:
                 #Create an array of retention indexes
                 retention_index = np.linspace(min_ri, max_ri, len(intensities))
 
-                #Plot the retention index vs. intensities
-                plt.plot(retention_index, intensities, linewidth=2.0, color='black')
-                # plt.xlabel('Retention Index')
-                # plt.ylabel('Abundance')
-                # plt.grid(True)
-                plt.axis('off')
+                #Create a plot
+                fig, ax = plt.subplots(figsize=(self.width, self.height))
+                #Plot the retention index and intensities
+                ax.plot(retention_index, intensities, linewidth=2.0, color='black')
+                ax.axis('off')
 
                 #Set the y-axis limit to the min and max intensities
                 if min(intensities) != max(intensities):
@@ -41,18 +43,28 @@ class EICPlotter:
                 #Set the x-axis limit to the min and max retention indexes
                 plt.xlim(min_ri, max_ri)
 
+                #Adjust the plot
+                plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
+
                 #Keep track of the number of plots
                 self.i += 1
-                #Set the title of the plot
-                # title = "plot #" + str(self.i)
-                # plt.title(title)
+
+                #Shrink the plot to fit the figure
+                plt.tight_layout()
+
+                # Calculate the dpi for the desired resolution
+                dpi = 128 / min(self.width, self.height)
+
+                # Save the figure with the calculated dpi
+                plt.savefig('plot_{}.png'.format(self.i), dpi=dpi)
 
                 #Show the plot
                 plt.show()
 
+
 # Usage of the EICPlotter class
 dir_path = r'D:\UCD_Fiehn_Lab\peaks_from_LCB'
 #Create an instance of the EICPlotter class
-plotter = EICPlotter(dir_path)
+plotter = EICPlotter(dir_path, 2, 2)
 #Call the plot method
 plotter.plot()
