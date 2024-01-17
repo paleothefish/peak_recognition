@@ -14,20 +14,21 @@ class EICPlotter:
         self.i = 0
 
     def plot(self):
-        #Iterate through the files in the directory
+        # Iterate through the files in the directory
         for file_name in os.listdir(self.dir_path):
-            #When file is a json file
+            # When file is a json file
             if file_name.endswith('.json'):
-                #Open the file and load the content
+                # Open the file and load the content
                 file_path = os.path.join(self.dir_path, file_name)
                 with open(file_path, 'r') as f:
                     content_dict = json.load(f)
 
-                #Get the retention index and intensities from the json file
-                intensities = content_dict.get('intensities', [])
+                # Get the retention index and intensities from the json file
+                data_points = content_dict.get('data', [])
+                intensities = [point['intensity'] for point in data_points]
                 min_ri = content_dict.get('begin_ri', 0)
                 max_ri = content_dict.get('end_ri', 0)
-                #Create an array of retention indexes
+                # Create an array of retention indexes
                 retention_index = np.linspace(min_ri, max_ri, len(intensities))
 
                 #Create a plot
@@ -38,8 +39,9 @@ class EICPlotter:
                 ax.axis('off')
 
                 #Set the y-axis limit to the min and max intensities
-                if min(intensities) != max(intensities):
-                    plt.ylim(min(intensities), max(intensities))
+                if intensities:
+                    if min(intensities) != max(intensities):
+                        plt.ylim(min(intensities), max(intensities))
 
                 #Set the x-axis limit to the min and max retention indexes
                 plt.xlim(min_ri, max_ri)
@@ -69,3 +71,5 @@ dir_path = r'D:\UCD_Fiehn_Lab\peaks_from_LCB'
 plotter = EICPlotter(dir_path, 1, 1)
 #Call the plot method
 plotter.plot()
+
+
